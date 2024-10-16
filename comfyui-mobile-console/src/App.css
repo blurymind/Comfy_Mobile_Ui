@@ -1,0 +1,86 @@
+#root {
+	max-width: 1280px;
+	margin: 0 auto;
+	text-align: center;
+	color: #c9c9c9;
+	background-color: rgb(31, 26, 26);
+	height: 100vh;
+	overflow: hidden;
+}
+
+.flex {
+	display: flex;
+	flex-wrap: wrap;
+	flex: 1;
+	height: 100%;
+}
+.spaced {
+	justify-content: space-between;
+	margin: 0 3px;
+}
+.padded-x {
+	padding: 0 4px;
+}
+.layout-wrapper {
+	/* width: 100vw;
+	height: 100vh; */
+	width: 100vw;
+	/* overflow: hidden; */
+}
+.top-half {
+	background-color: yellow;
+	height: calc(60vh - 5px);
+	overflow: auto;
+}
+.top-half:focus,
+.top-half:hover {
+	background-color: blue;
+	height: calc(80vh - 5px);
+}
+.bottom-half {
+	display: flex;
+	/* background-color: blue; */
+	height: 100% s;
+}
+
+.output-image {
+	object-fit: contain;
+	min-width: 200px;
+	max-width: 100vw;
+}
+.prompt-field {
+	overflow: auto;
+	max-height: 25vh;
+	width: calc(100vw - 3px);
+	max-width: 90vw;
+	min-height: 30vh;
+}
+
+.tab-panel {
+	/* display: flex;
+	flex: 1; */
+}
+.tabs {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.render-button {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+.result-image {
+	object-fit: contain;
+	max-width: 100vw;
+	height: fit-content;
+}
+.selected-option {
+	background-color: aqua;
+}
+
+/* .react-dropdown-select-content{
+	max-height: 200px;
+	overflow: hidden;
+} */

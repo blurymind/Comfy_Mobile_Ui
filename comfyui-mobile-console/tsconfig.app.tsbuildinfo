@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/hooks.ts","./src/main.tsx","./src/utils.ts","./src/vite-env.d.ts","./src/components/Controls.tsx","./src/components/PromptEditor.tsx","./src/components/input-renderers.tsx"],"version":"5.6.3"}
