@@ -8,7 +8,7 @@ import json
 
 WEBROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfyui-mobile-console", "dist")
 FIREPLACE = os.path.dirname(os.path.realpath(__file__))
-WORKFLOW_COLLECTION = os.path.join(os.path.dirname(os.path.realpath(__file__)), "workflows")
+WORKFLOW_COLLECTION = os.path.join(os.path.dirname(os.path.realpath(__file__)), "workflow-apis")
 
 @server.PromptServer.instance.routes.get("/fireplace")
 def fireplace(request):
