@@ -41,7 +41,7 @@ function App() {
 		load_api_workflows().then((workflows) => {
 			console.log({ workflows });
 			//@ts-ignore
-			const workflowToUse = workflows[0];
+			const workflowToUse = Object.values(workflows)[0];//todo make selectable
 			setSufixWorkflowText(getWorkflowText(workflowToUse));
 			console.log("SET", { workflowToUse });
 			setWorklow(workflowToUse);

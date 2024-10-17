@@ -20,16 +20,16 @@ export const CLIENT_ID = uuidv4();
 export const SERVER_ADDRESS = window.location.hostname + ":" + COMFY_UI_PORT;
 export const PROMPT_TIME = 1000;
 export const load_api_workflows = () => {
-	let wf = {
-		"0": "/workflows/default.json",
-	} as any;
-	const promises: any = [];
-	for (let key in wf) {
-		// let response = await fetch(wf[key]);
-		// wf[key] = await response.json();
-		promises.push(fetch(wf[key]).then((res) => res.json()));
-	}
-	return Promise.all(promises);
+	// let wf = {
+	// 	"0": "/workflows.json",
+	// } as any;
+	// const promises: any = [];
+	// for (let key in wf) {
+	// 	// let response = await fetch(wf[key]);
+	// 	// wf[key] = await response.json();
+	// 	promises.push(fetch(wf[key]).then((res) => res.json()));
+	// }
+	return fetch("/fireplace/workflows.json").then((res) => res.json());
 	// todo get it from ComfyUI/user/default/comfy.templates.json
 	// return wf;
 };
