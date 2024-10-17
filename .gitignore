@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+workflows
+workflow-apis
 # Distribution / packaging
 .Python
 build/
