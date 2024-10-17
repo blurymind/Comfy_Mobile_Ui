@@ -111,7 +111,7 @@ export default ({
 		}));
 	};
 	const onRender = () => {
-		console.log({seed: getSeedNodeKey(altWorkflow)})
+		console.log({ seed: getSeedNodeKey(altWorkflow) });
 		const seedNodeKey = getSeedNodeKey(altWorkflow);
 		for (let step = 0; step < batch; step++) {
 			const random = seed();
@@ -158,24 +158,23 @@ export default ({
 				</div>
 			</Tabs>
 			{isGenerating && <div>{progress}</div>}
-			<div>
-				<div className="render-button">
-					{count > 0 ? (
-						`Rendering ${batch - count + 1} of ${batch}`
-					) : (
-						<>
-							<button onClick={onRender} disabled={!workflow || isGenerating}>
-								{`Render`}
-							</button>
-							<input
-								value={batch}
-								type="number"
-								onChange={(e) => setBatch(Number(e.target.value))}
-								style={{ maxWidth: 30 }}
-							/>
-						</>
-					)}
-				</div>
+
+			<div className="render-button">
+				{count > 0 ? (
+					`Rendering ${batch - count + 1} of ${batch}`
+				) : (
+					<>
+						<button onClick={onRender} disabled={!workflow || isGenerating}>
+							{`Render`}
+						</button>
+						<input
+							value={batch}
+							type="number"
+							onChange={(e) => setBatch(Number(e.target.value))}
+							style={{ maxWidth: 30 }}
+						/>
+					</>
+				)}
 			</div>
 		</div>
 	);

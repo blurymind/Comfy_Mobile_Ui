@@ -61,7 +61,7 @@ export const getWorkflowPromptNode = (workflow: any): any => {
 
 // @ts-ignore
 export const getSeedNodeKey = (altWorkflow: any): any => {
-	const result = Object.entries(altWorkflow).find(([_,node]) => {
+	const result = Object.entries(altWorkflow).find(([_, node]) => {
 		if (
 			//@ts-ignore
 			node.class_type === "RandomNoise" &&
@@ -76,14 +76,14 @@ export const getSeedNodeKey = (altWorkflow: any): any => {
 			//@ts-ignore
 			"seed" in node.inputs
 		) {
-			console.log()
+			console.log();
 			return true;
-		}	
+		}
 		return false;
-	}) ?? ['0']
+	}) ?? ["0"];
 
-	console.log({result, altWorkflow})
-	return result[0]// {...result, noise_seed: seed};
+	console.log({ result, altWorkflow });
+	return result[0]; // {...result, noise_seed: seed};
 };
 
 export const getMutatedWorkflow = (workflow: any, prompt: string) => {
