@@ -80,7 +80,12 @@
 	background-color: aqua;
 }
 
-/* .react-dropdown-select-content{
-	max-height: 200px;
-	overflow: hidden;
-} */
+.workflow-selector {
+	max-width: 510px;
+	width: 80vw;
+	position: sticky;
+	top: 1px;
+	right: 3px;
+	margin: auto;
+	background-color: rgba(0, 0, 0, 0.65);
+}

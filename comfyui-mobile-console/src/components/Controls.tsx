@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
-import { getSeedNode, getWorkflowText, queue_prompt, seed } from "../utils";
+import { getSeedNodeKey, getWorkflowText, queue_prompt, seed } from "../utils";
 import { textRenderer } from "./input-renderers";
 import { useLocalStorage } from "../hooks";
 
@@ -111,7 +111,8 @@ export default ({
 		}));
 	};
 	const onRender = () => {
-		const [seedNodeKey] = getSeedNode(altWorkflow);
+		console.log({seed: getSeedNodeKey(altWorkflow)})
+		const seedNodeKey = getSeedNodeKey(altWorkflow);
 		for (let step = 0; step < batch; step++) {
 			const random = seed();
 			queue_prompt({
@@ -121,6 +122,7 @@ export default ({
 					inputs: {
 						...altWorkflow[seedNodeKey].inputs,
 						noise_seed: random,
+						seed: random,
 					},
 				},
 			});

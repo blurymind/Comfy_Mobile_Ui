@@ -11,14 +11,17 @@ import {
 	socket,
 } from "./utils";
 import Controls from "./components/Controls";
+import Select from "react-dropdown-select";
 
 // console.log({defineConfig})/
 function App() {
 	const [count, setCount] = useState<number>(0);
 	// const [seed, setSeed] = useState(0);
 	const [isGenerating, setIsGenerating] = useState(false);
-	const [workflow, setWorklow] = useState<any>(null);
-	const [altWorkflow, setAltWorkflow] = useState(workflow);
+	const [workflow, setWorklow] = useState<string>("");
+	const [workflows, setWorkflows] = useState<any>(null);
+
+	const [altWorkflow, setAltWorkflow] = useState<any>(null);
 	const [loaded, setLoaded] = useState(false);
 	const [results, setResults] = useLocalStorage<
 		Array<{
@@ -40,11 +43,14 @@ function App() {
 	useEffect(() => {
 		load_api_workflows().then((workflows) => {
 			console.log({ workflows });
+
 			//@ts-ignore
-			const workflowToUse = Object.values(workflows)[0];//todo make selectable
-			setSufixWorkflowText(getWorkflowText(workflowToUse));
-			console.log("SET", { workflowToUse });
-			setWorklow(workflowToUse);
+			const [first] = Object.entries(Object.entries(workflows)); //todo make selectable
+			const [workflowName, workflowVal] = first[1];
+			console.log({ workflowName, workflowVal, workflows });
+			setSufixWorkflowText(getWorkflowText(workflowVal));
+			setWorkflows(workflows);
+			setWorklow(workflowName as any);
 			setLoaded(true);
 		});
 		() => {
@@ -52,6 +58,9 @@ function App() {
 		};
 	}, []);
 
+	useEffect(() => {
+		if (workflows && workflow) setAltWorkflow(workflows[workflow]);
+	}, [workflow]);
 	// todo move to utils
 	const getLoras = () => {
 		const result = Object.values(altWorkflow)
@@ -71,8 +80,8 @@ function App() {
 		return result;
 	};
 	useEffect(() => {
-		if (workflow == null) return;
-		setAltWorkflow(workflow);
+		if (!workflow) return;
+		// setAltWorkflow(workflow);
 		console.log("-------------------------------------------DO----");
 		socket.addEventListener("open", (event) => {
 			console.log("============ Connected to the server", { event });
@@ -140,28 +149,49 @@ function App() {
 		socket.addEventListener("message", onMessage);
 	}, [loaded]);
 
+	const availableWorkflows = Object.keys(workflows ?? []);
+
+	const workflowOptions = availableWorkflows.map((value: any) => ({
+		value,
+		label: value.split(".")[0],
+	}));
+	console.log({ availableWorkflows, workflowOptions });
 	return (
 		<>
 			<div className="layout-wrapper" id="app-root">
-				<div className="flex top-half" ref={resultContainerRef}>
-					{(results ?? []).map((item) => (
-						<div className="output-image" key={item.random}>
-							<img
-								src={`${COMFY_UI_URL}/view?filename=${item.filename}&type=output&subfolder=${item.subfolder}&rand=${item.random}
-          `}
-								width="512"
-								height="512"
-								title={`tags: ${item.tags}\n(seed: ${item.random})\n\nmodels: ${item.models}\n\nloras: ${item.loras}`}
-								alt={item.filename}
-								className="result-image"
-							></img>
+				<div className="top-half" ref={resultContainerRef}>
+					{workflowOptions && (
+						<div className="workflow-selector">
+							<Select
+								options={workflowOptions}
+								onChange={(newSelected) => setWorklow(newSelected[0].value)}
+								values={[{ value: workflow, label: workflow.split(".")[0] }]}
+								searchable
+								dropdownGap={0}
+							/>
 						</div>
-					))}
+					)}
+
+					<div className="flex">
+						{(results ?? []).map((item) => (
+							<div className="output-image" key={item.random}>
+								<img
+									src={`${COMFY_UI_URL}/view?filename=${item.filename}&type=output&subfolder=${item.subfolder}&rand=${item.random}
+          `}
+									width="512"
+									height="512"
+									title={`workflow:${workflow}\ntags: ${item.tags}\n(seed: ${item.random})\n\nmodels: ${item.models}\n\nloras: ${item.loras}`}
+									alt={item.filename}
+									className="result-image"
+								></img>
+							</div>
+						))}
+					</div>
 				</div>
 				<div className="bottom-half">
 					{altWorkflow && (
 						<Controls
-							workflow={workflow}
+							workflow={workflows[workflow]}
 							altWorkflow={altWorkflow}
 							setAltWorkflow={setAltWorkflow}
 							isGenerating={isGenerating}
@@ -172,15 +202,7 @@ function App() {
 					)}
 					{!workflow && <div>No workflow found</div>}
 				</div>
-
-				{/* <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a> */}
 			</div>
-			{/* <input type="search"></input> */}
 		</>
 	);
 }

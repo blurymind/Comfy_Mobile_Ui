@@ -1,5 +1,4 @@
 from .mobile import NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
-
 import os
 import server
 import folder_paths
@@ -26,21 +25,17 @@ def fp_workflows(request):
                 result[filename] = data
     return web.json_response(result)
 
+# https://github.com/BennyKok/comfyui-deploy/blob/main/custom_routes.py
 @server.PromptServer.instance.routes.get("/comfyui-deploy/models")
 async def get_installed_models(request):
-    # Directly return the list of paths as JSON
     new_dict = {}
     for key, value in folder_paths.folder_names_and_paths.items():
-        # Convert set to list for JSON compatibility
-        # for path in value[0]:
         file_list = folder_paths.get_filename_list(key)
         value_json_compatible = (value[0], list(value[1]), file_list)
         new_dict[key] = value_json_compatible
-    # logger.info(new_dict)
     return web.json_response(new_dict)
 
-# print("--- WEBROOT: " + WEBROOT)
-# print("--- ROOT: " + APPROOT)
+
 server.PromptServer.instance.routes.static("/fireplace", WEBROOT)
 # server.PromptServer.instance.routes.static("/fireplace/workflows", path=os.path.join(FIREPLACE, "workflows"))
 # server.PromptServer.instance.routes.static("/fireplace/assets", WEBROOT)
