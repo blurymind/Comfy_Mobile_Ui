@@ -180,7 +180,7 @@ function App() {
           `}
 									width="512"
 									height="512"
-									title={`workflow:${workflow}\ntags: ${item.tags}\n(seed: ${item.random})\n\nmodels: ${item.models}\n\nloras: ${item.loras}`}
+									title={`workflow:${workflow}\ntags: ${item.tags ?? ''}\n(seed: ${item.random})\n\nmodels: ${item.models ?? ''}\n\nloras: ${item.loras ?? ''}`}
 									alt={item.filename}
 									className="result-image"
 								></img>
