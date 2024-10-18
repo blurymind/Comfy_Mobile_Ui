@@ -103,7 +103,7 @@ function App() {
 				const loras = getLoras(altWorkflow);
 				const models = getModels(altWorkflow);
 				setResults((prev) => [
-					...prev,
+					...prev,// todo must be prev with state, otherwise wont work. This is borked for localStorage and it uses the previous of previous
 					...imageData
 						.filter(
 							(item: any) => !item.filename.toLowerCase().includes("_temp_"),
@@ -144,7 +144,7 @@ function App() {
 			});
 			console.log("========= ADDING SOCKET EVENT LISTENER");
 			socket.addEventListener("message", onSocketMessage);
-			console.log(" === Initialized! ===");
+			console.log("🎉🎉🎉🎉 === Initialized! === 🎉🎉🎉🎉🎉");
 			setLoaded(true);
 		}
 	}, [altWorkflow, loaded]);
@@ -161,7 +161,8 @@ function App() {
 	return (
 		<>
 			<div className="layout-wrapper" id="app-root">
-				{isGenerating && <div>{`Rendering ${batch - count + 1} of ${batch} -- Steps: ${progress}`}</div>}
+				{results && <div>{isGenerating ? `Rendering ${batch - count + 1} of ${batch} -- Steps: ${progress} Total: ${results.length}`: `Total: ${results.length}`}</div>}
+				
 				<div className="top-half" ref={resultContainerRef}>
 					{workflowOptions.length > 0 && (
 						<div className="workflow-selector">

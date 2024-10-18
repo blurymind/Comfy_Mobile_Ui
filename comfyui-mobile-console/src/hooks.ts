@@ -5,7 +5,7 @@ export const useLocalStorage = <T>(
 	key: string,
 	initialValue: T,
 ): [T, Dispatch<SetStateAction<T>>] => {
-	const keyUse = `ComfyUi${key}`;
+	const keyUse = `${key}`;
 	const [storedValue, setStoredValue] = useState(() => {
 		try {
 			const item = window.localStorage.getItem(keyUse);
@@ -18,6 +18,7 @@ export const useLocalStorage = <T>(
 
 	const setValue = (value: T): T => {
 		try {
+			console.log('SET STORAGE:', {key, value, isFunc: value instanceof Function})// value is correct
 			const valueToStore =
 				value instanceof Function ? value(storedValue) : value;
 			setStoredValue(valueToStore);
