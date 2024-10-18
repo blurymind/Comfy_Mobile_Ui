@@ -67,6 +67,7 @@ export const getWorkflowPromptNode = (workflow: any): any => {
 
 // @ts-ignore
 export const getSeedNodeKey = (altWorkflow: any): any => {
+	console.log({ altWorkflow });
 	const result = Object.entries(altWorkflow).find(([_, node]) => {
 		if (
 			//@ts-ignore
@@ -117,11 +118,26 @@ export const getInput = (query: string, sufixWorkflowText: string) => {
 	return query.replace(/(\r\n|\n|\r|\")/gm, " ") + "," + sufixWorkflowText;
 };
 
-
 export const socket = new WebSocket(
 	PROTOCOL + "//" + SERVER_ADDRESS + "/ws?clientId=" + CLIENT_ID,
 );
-
+// todo move to utils
+export const getLoras = (altWorkflow: any) => {
+	const result = Object.values(altWorkflow)
+		.filter((item: any) => item.class_type === "LoraLoader")
+		.map(
+			(item: any) => `${item.inputs.lora_name} (${item.inputs.strength_model})`,
+		)
+		.join(",\n");
+	return result;
+};
+export const getModels = (altWorkflow: any) => {
+	const result = Object.values(altWorkflow)
+		.filter((item: any) => item.class_type.startsWith("CheckpointLoader"))
+		.map((item: any) => `${item.inputs.ckpt_name.split(".")[0]}`)
+		.join(",\n");
+	return result;
+};
 // export const initialiseListeners = ({
 // 	resultContainerRef,
 // 	setCount,
@@ -161,7 +177,7 @@ export const socket = new WebSocket(
 // 				// console.log({ imageData, results, isGenerating });
 // 				const loras = ""; //getLoras();
 // 				const models = ""; //getModels();
-				
+
 // 				const nextResults: any = [...results]
 // 				imageData.forEach((item: any) => nextResults.push({
 // 					filename: item.filename,
@@ -171,7 +187,6 @@ export const socket = new WebSocket(
 // 					models,
 // 					loras,
 // 				}))
-
 
 // 				// 	...results,
 // 				// 	...imageData
