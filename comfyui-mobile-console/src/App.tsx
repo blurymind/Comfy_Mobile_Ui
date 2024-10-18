@@ -89,7 +89,7 @@ function App() {
 			console.info(data["data"]["max"], data["data"]["value"]);
 
 			// updateProgress(data['data']['max'], data['data']['value']);
-		} else if (data.type === "executed" && count === 0 && !isGenerating) {
+		} else if (data.type === "executed") {
 			const execution_time = 22; //elapsedTime();
 			console.log("Execution time: " + execution_time + "s", {
 				isGenerating,
@@ -164,6 +164,7 @@ function App() {
 	return (
 		<>
 			<div className="layout-wrapper" id="app-root">
+				{isGenerating && <div>{`Generating:${progress}`}</div>}
 				<div className="top-half" ref={resultContainerRef}>
 					{workflowOptions.length > 0 && (
 						<div className="workflow-selector">
