@@ -18,7 +18,6 @@ import Select from "react-dropdown-select";
 // console.log({defineConfig})/
 function App() {
 	const [count, setCount] = useState<number>(0);
-	// const [seed, setSeed] = useState(0);
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [workflow, setWorkflow] = useLocalStorage<string>(
 		"selectedWorkflow",
@@ -28,7 +27,7 @@ function App() {
 
 	const [altWorkflow, setAltWorkflow] = useState<any>(null);
 	const [loaded, setLoaded] = useState(false);
-	const [results, setResults] = useLocalStorage<
+	const [results, setResults] = useState<
 		Array<{
 			filename: string;
 			subfolder: String;
@@ -37,9 +36,9 @@ function App() {
 			loras: string;
 			models: string;
 		}>
-	>("resultsCache", []);
+	>([]);
 	const [progress, setProgress] = useState(0);
-	const [batch, setBatch] = useState(1);
+	const [batch, setBatch] = useLocalStorage("batchRenderOption", 1);
 	const [defaultPromptValue, setSufixWorkflowText] = useState(""); // needs to be state
 	const resultContainerRef = useRef<HTMLDivElement>(null);
 
@@ -163,7 +162,7 @@ function App() {
 	return (
 		<>
 			<div className="layout-wrapper" id="app-root">
-				{isGenerating && <div>{`Rendering ${batch - count + 1} of ${batch}Generating:${progress}`}</div>}
+				{isGenerating && <div>{`Rendering ${batch - count + 1} of ${batch} -- Steps: ${progress}`}</div>}
 				<div className="top-half" ref={resultContainerRef}>
 					{workflowOptions.length > 0 && (
 						<div className="workflow-selector">
