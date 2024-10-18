@@ -62,9 +62,9 @@ function App() {
 			console.error("Failed to load workflow ", key);
 			return;
 		}
-		console.log("===== Selecting workflow:: ", key);
 		setWorkflow(key);
 		const nextWorkflow = workflows[key];
+		console.log("===== Selecting workflow:: ", {key, nextWorkflow});
 		setAltWorkflow(nextWorkflow);
 		const workflowText = getWorkflowText(nextWorkflow);
 		setSufixWorkflowText(workflowText);
@@ -80,7 +80,7 @@ function App() {
 		}
 	}, [loaded, workflows]);
 
-	const onMessage = (event: any) => {
+	const onSocketMessage = (event: any) => {
 		const data = JSON.parse(event.data);
 		console.log("---", data);
 		if (data.type === "progress") {
@@ -144,8 +144,7 @@ function App() {
 				console.log("============ Connected to the server", { event });
 			});
 			console.log("========= ADDING SOCKET EVENT LISTENER");
-
-			socket.addEventListener("message", onMessage);
+			socket.addEventListener("message", onSocketMessage);
 			console.log(" === Initialized! ===");
 			setLoaded(true);
 		}
@@ -153,7 +152,6 @@ function App() {
 
 	if (!loaded) return null;
 	const availableWorkflows = Object.keys(workflows ?? {});
-	console.log({ availableWorkflows });
 	const workflowOptions = availableWorkflows.map((value: any) => ({
 		value,
 		label: value,
@@ -201,6 +199,7 @@ function App() {
 					{altWorkflow && (
 						<Controls
 							workflow={workflows[workflow]}
+							workflowName={workflow}
 							altWorkflow={altWorkflow}
 							setAltWorkflow={setAltWorkflow}
 							isGenerating={isGenerating}

@@ -78,9 +78,11 @@ export interface Props {
 	count: number;
 	altWorkflow: any;
 	setAltWorkflow: any;
+	workflowName: string;
 }
 export default ({
 	workflow,
+	workflowName,
 	isGenerating,
 	progress,
 	count,
@@ -140,13 +142,13 @@ export default ({
 					{inputData.map((item, index) => {
 						//todo make sub component?
 						return (
-							<TabPanel className="tab-panel" key={`${index}`}>
+							<TabPanel className="tab-panel" key={`${workflowName}${item.class_type}${index}`}>
 								{item.inputs.map((input: any, inpIndex: number) => {
 									if (input.renderer) {
 										return input.renderer(
 											input,
 											onSetInput(input),
-											inpIndex,
+											`${workflowName}${item.class_type}${inpIndex}`,
 											defaultPromptValue,
 										);
 									}
