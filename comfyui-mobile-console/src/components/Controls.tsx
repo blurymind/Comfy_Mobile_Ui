@@ -79,6 +79,8 @@ export interface Props {
 	altWorkflow: any;
 	setAltWorkflow: any;
 	workflowName: string;
+	batch: number;
+	setBatch:any
 }
 export default ({
 	workflow,
@@ -89,8 +91,9 @@ export default ({
 	defaultPromptValue,
 	altWorkflow,
 	setAltWorkflow,
+	setBatch,
+	batch,
 }: Props) => {
-	const [batch, setBatch] = useLocalStorage("batchCount", 1);
 	const suffixTags = useMemo(() => getWorkflowText(workflow), [workflow]);
 	console.log({ altWorkflow });
 	const [inputLabels, inputData] = useMemo(
@@ -113,7 +116,6 @@ export default ({
 		}));
 	};
 	const onRender = () => {
-		console.log({ seed: getSeedNodeKey(altWorkflow) });
 		const seedNodeKey = getSeedNodeKey(altWorkflow);
 		for (let step = 0; step < batch; step++) {
 			const random = seed();
@@ -135,7 +137,7 @@ export default ({
 			<Tabs className="tabs">
 				<TabList>
 					{inputLabels.map((input, index) => (
-						<Tab key={index}>{input}</Tab>
+						<Tab key={`${input}${index}`}>{input}</Tab>
 					))}
 				</TabList>
 				<div className="flex">
@@ -163,7 +165,7 @@ export default ({
 
 			<div className="render-button">
 				{count > 0 ? (
-					`Rendering ${batch - count + 1} of ${batch}`
+					<button>{`Rendering...`}</button>
 				) : (
 					<>
 						<button onClick={onRender} disabled={!workflow || isGenerating}>

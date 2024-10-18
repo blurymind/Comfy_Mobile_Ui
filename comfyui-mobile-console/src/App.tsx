@@ -39,6 +39,7 @@ function App() {
 		}>
 	>("resultsCache", []);
 	const [progress, setProgress] = useState(0);
+	const [batch, setBatch] = useState(1);
 	const [defaultPromptValue, setSufixWorkflowText] = useState(""); // needs to be state
 	const resultContainerRef = useRef<HTMLDivElement>(null);
 
@@ -133,7 +134,7 @@ function App() {
 		} else if (data.type === "status") {
 			console.log({ data });
 			const remaining = data["data"]["status"]["exec_info"]["queue_remaining"];
-			setIsGenerating(remaining > 0 ? true : false);
+			setIsGenerating(remaining > 0);
 			setCount(remaining);
 		}
 	};
@@ -162,7 +163,7 @@ function App() {
 	return (
 		<>
 			<div className="layout-wrapper" id="app-root">
-				{isGenerating && <div>{`Generating:${progress}`}</div>}
+				{isGenerating && <div>{`Rendering ${batch - count + 1} of ${batch}Generating:${progress}`}</div>}
 				<div className="top-half" ref={resultContainerRef}>
 					{workflowOptions.length > 0 && (
 						<div className="workflow-selector">
@@ -180,14 +181,14 @@ function App() {
 					)}
 
 					<div className="flex">
-						{(results ?? []).map((item) => (
-							<div className="output-image" key={item.random}>
+						{(results ?? []).map((item, index) => (
+							<div className="output-image" key={`${index}-${item.filename}-${item.random}`}>
 								<img
 									src={`${COMFY_UI_URL}/view?filename=${item.filename}&type=output&subfolder=${item.subfolder}&rand=${item.random}
           `}
 									width="512"
 									height="512"
-									title={`workflow:${workflow}\ntags: ${item.tags ?? ""}\n(seed: ${item.random})\n\nmodels: ${item.models ?? ""}\n\nloras: ${item.loras ?? ""}`}
+									title={`workflow:${workflow}\nfilename: ${item.filename}\n\ntags: ${item.tags ?? ""}\n(seed: ${item.random})\n\nmodels: ${item.models ?? ""}\n\nloras: ${item.loras ?? ""}`}
 									alt={item.filename}
 									className="result-image"
 								></img>
@@ -205,6 +206,8 @@ function App() {
 							isGenerating={isGenerating}
 							progress={progress}
 							count={count}
+							batch={batch}
+							 setBatch={setBatch}
 							defaultPromptValue={defaultPromptValue}
 						></Controls>
 					)}
