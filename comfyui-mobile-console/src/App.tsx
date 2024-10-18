@@ -41,7 +41,7 @@ function App() {
 	const [promptTags] = useLocalStorage("promptTags", []);
 
 	useEffect(() => {
-		load_api_workflows().then((workflows) => {
+		load_api_workflows((workflows: any) => {
 			console.log({ workflows });
 
 			//@ts-ignore
