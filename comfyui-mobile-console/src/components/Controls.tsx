@@ -3,7 +3,6 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import { getSeedNodeKey, getWorkflowText, queue_prompt, seed } from "../utils";
 import { textRenderer } from "./input-renderers";
-import { useLocalStorage } from "../hooks";
 
 const CONTROLERS: any = {
 	CLIPTextEncode: {

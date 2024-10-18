@@ -24,7 +24,6 @@ function App() {
 		"",
 	);
 	const [workflows, setWorkflows] = useState<any>(null);
-
 	const [altWorkflow, setAltWorkflow] = useState<any>(null);
 	const [loaded, setLoaded] = useState(false);
 	const [results, setResults] = useState<
@@ -49,17 +48,27 @@ function App() {
 	useEffect(() => {
 		if (loaded) return;
 		load_api_workflows((workflows: any) => {
-			console.log("==== App Received user workflows ==", { workflows });
 			//@ts-ignore
 			const [first] = Object.entries(Object.entries(workflows)); //todo make selectable
 			const [workflowName] = first[1];
-			setWorkflow(workflow ?? (workflowName as any));
+			console.log("==== App Received user workflows ==", { workflows });
+			setWorkflow(workflow || (workflowName as any));
 			setWorkflows(workflows);
 		});
 	}, [loaded]);
+	useEffect(() => {
+		if (!loaded && workflows) {
+			console.log(
+				{ workflows, workflow },
+				"======= Loaded user workflows into state",
+				workflows,
+			);
+			onSetCurrentWorkflowData(workflow);
+		}
+	}, [loaded, workflows, workflow]);
 	const onSetCurrentWorkflowData = (key: string) => {
 		if (!workflows || !workflow) {
-			console.error("Failed to load workflow ", key);
+			console.error("Failed to load workflow ", {key, workflow, workflows});
 			return;
 		}
 		setWorkflow(key);
@@ -69,16 +78,6 @@ function App() {
 		const workflowText = getWorkflowText(nextWorkflow);
 		setSufixWorkflowText(workflowText);
 	};
-	useEffect(() => {
-		if (!loaded && workflows) {
-			console.log(
-				{ workflows },
-				"======= Loaded user workflows into state",
-				workflows,
-			);
-			onSetCurrentWorkflowData(workflow);
-		}
-	}, [loaded, workflows]);
 
 	const onSocketMessage = (event: any) => {
 		const data = JSON.parse(event.data);
