@@ -5,9 +5,10 @@ import folder_paths
 from aiohttp import web
 import json
 
-WEBROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfyui-mobile-console", "dist")
-FIREPLACE = os.path.dirname(os.path.realpath(__file__))
-WORKFLOW_COLLECTION = os.path.join(os.path.dirname(os.path.realpath(__file__)), "workflow-apis")
+ROOT_FOLDER = os.path.dirname(os.path.realpath(__file__))
+WEBROOT = os.path.join(ROOT_FOLDER, "comfyui-mobile-console", "dist")
+WORKFLOW_COLLECTION = os.path.join(ROOT_FOLDER, "workflow-apis")
+FIREPLACE_UI_PUBLIC = os.path.join(ROOT_FOLDER, "comfyui-mobile-console", "public")
 
 @server.PromptServer.instance.routes.get("/fireplace")
 def fireplace(request):
@@ -23,6 +24,10 @@ def fp_workflows(request):
             with open(os.path.join(WORKFLOW_COLLECTION, filename)) as file:
                 data = json.load(file)
                 result[filename] = data
+    debug_file = os.path.join(FIREPLACE_UI_PUBLIC, "workflows.json")
+    print(f'--- dumping debug file at: {debug_file}: contents: {result}')
+    with open(debug_file, "w") as file:
+        json.dump(result, file)
     return web.json_response(result)
 
 # https://github.com/BennyKok/comfyui-deploy/blob/main/custom_routes.py
