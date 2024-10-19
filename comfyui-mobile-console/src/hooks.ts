@@ -18,7 +18,11 @@ export const useLocalStorage = <T>(
 
 	const setValue = (value: T): T => {
 		try {
-			console.log('SET STORAGE:', {key, value, isFunc: value instanceof Function})// value is correct
+			console.log("SET STORAGE:", {
+				key,
+				value,
+				isFunc: value instanceof Function,
+			}); // value is correct
 			const valueToStore =
 				value instanceof Function ? value(storedValue) : value;
 			setStoredValue(valueToStore);

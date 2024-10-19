@@ -68,12 +68,23 @@ function App() {
 	}, [loaded, workflows, workflow]);
 	const onSetCurrentWorkflowData = (key: string) => {
 		if (!workflows || !workflow) {
-			console.error("Failed to load workflow ", {key, workflow, workflows});
+			console.error("Failed to load workflow ", { key, workflow, workflows });
 			return;
 		}
-		setWorkflow(key);
-		const nextWorkflow = workflows[key];
-		console.log("===== Selecting workflow:: ", {key, nextWorkflow});
+		const nextKey = key in workflows ? key : Object.keys(workflows)[0];
+		if (nextKey !== key) {
+			console.error(
+				`>>> ${key} fonr found in workflows! Using ${nextKey} instead...`,
+				{ workflows },
+			);
+		}
+		setWorkflow(nextKey);
+		const nextWorkflow = workflows[nextKey];
+		console.log("===== Selecting workflow:: ", {
+			nextKey,
+			nextWorkflow,
+			workflows,
+		});
 		setAltWorkflow(nextWorkflow);
 		const workflowText = getWorkflowText(nextWorkflow);
 		setSufixWorkflowText(workflowText);
@@ -103,7 +114,7 @@ function App() {
 				const loras = getLoras(altWorkflow);
 				const models = getModels(altWorkflow);
 				setResults((prev) => [
-					...prev,// todo must be prev with state, otherwise wont work. This is borked for localStorage and it uses the previous of previous
+					...prev, // todo must be prev with state, otherwise wont work. This is borked for localStorage and it uses the previous of previous
 					...imageData
 						.filter(
 							(item: any) => !item.filename.toLowerCase().includes("_temp_"),
@@ -161,8 +172,14 @@ function App() {
 	return (
 		<>
 			<div className="layout-wrapper" id="app-root">
-				{results && <div>{isGenerating ? `Rendering ${batch - count + 1} of ${batch} -- Steps: ${progress} Total: ${results.length}`: `Total: ${results.length}`}</div>}
-				
+				{results && (
+					<div>
+						{isGenerating
+							? `Rendering ${batch - count + 1} of ${batch} -- Steps: ${progress} Total: ${results.length}`
+							: `Total: ${results.length}`}
+					</div>
+				)}
+
 				<div className="top-half" ref={resultContainerRef}>
 					{workflowOptions.length > 0 && (
 						<div className="workflow-selector">
@@ -181,7 +198,10 @@ function App() {
 
 					<div className="flex">
 						{(results ?? []).map((item, index) => (
-							<div className="output-image" key={`${index}-${item.filename}-${item.random}`}>
+							<div
+								className="output-image"
+								key={`${index}-${item.filename}-${item.random}`}
+							>
 								<img
 									src={`${COMFY_UI_URL}/view?filename=${item.filename}&type=output&subfolder=${item.subfolder}&rand=${item.random}
           `}
@@ -206,7 +226,7 @@ function App() {
 							progress={progress}
 							count={count}
 							batch={batch}
-							 setBatch={setBatch}
+							setBatch={setBatch}
 							defaultPromptValue={defaultPromptValue}
 						></Controls>
 					)}

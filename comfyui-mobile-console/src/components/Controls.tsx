@@ -79,7 +79,7 @@ export interface Props {
 	setAltWorkflow: any;
 	workflowName: string;
 	batch: number;
-	setBatch:any
+	setBatch: any;
 }
 export default ({
 	workflow,
@@ -143,7 +143,10 @@ export default ({
 					{inputData.map((item, index) => {
 						//todo make sub component?
 						return (
-							<TabPanel className="tab-panel" key={`${workflowName}${item.class_type}${index}`}>
+							<TabPanel
+								className="tab-panel"
+								key={`${workflowName}${item.class_type}${index}`}
+							>
 								{item.inputs.map((input: any, inpIndex: number) => {
 									if (input.renderer) {
 										return input.renderer(
