@@ -46,6 +46,34 @@ server.PromptServer.instance.routes.static("/fireplace", WEBROOT)
 # server.PromptServer.instance.routes.static("/fireplace/assets", WEBROOT)
 # can run from Krita with 
 # source ~/.local/share/krita/ai_diffusion/server/venv/bin/activate && python ./main.py --listen 0.0.0.0 --enable-cors-header '*'
+
+
+COMFY_OUTPUTS = os.path.join(os.path.dirname(os.path.dirname(ROOT_FOLDER)), 'output')
+server.PromptServer.instance.routes.static("/fireplace/outputs", WEBROOT)
+@server.PromptServer.instance.routes.get("/fireplace/fs")
+async def get_fs_info(request):
+    print(f'REQUESTED FS DATA :: {request}')
+    outpus_directories = {}
+    for path in os.listdir(COMFY_OUTPUTS):
+        if not os.path.isfile(path):
+            print(f'---path: {path}')
+            
+            path_files = []
+            try:
+                for sub_path in os.listdir(os.path.join(COMFY_OUTPUTS, path)):
+                    path_files.append(sub_path)
+            except:
+                print(f'Couldnt get files for {sub_path}')
+            if len(path_files) > 0:
+                outpus_directories[path] = {}
+                outpus_directories[path] = path_files
+            
+            
+    return web.json_response(outpus_directories)
+
+
+print(f' --- COMFY folder: {COMFY_OUTPUTS}')
+
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
 
 
