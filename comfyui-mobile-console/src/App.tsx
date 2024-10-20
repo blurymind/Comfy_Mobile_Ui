@@ -10,6 +10,7 @@ import {
 	getModels,
 	getWorkflowText,
 	load_api_workflows,
+	load_outputs,
 	socket,
 } from "./utils";
 import Controls from "./components/Controls";
@@ -54,6 +55,16 @@ function App() {
 			console.log("==== App Received user workflows ==", { workflows });
 			setWorkflow(workflow || (workflowName as any));
 			setWorkflows(workflows);
+			load_outputs((outputs: any) => {
+				const initResults: any = [];
+				// const initCollections: any = [];//todo
+				Object.keys(outputs).forEach((subfolder: any) => {
+					Object.values(outputs[subfolder]).forEach((file: any) => {
+						initResults.push({ filename: file.file_name, subfolder });
+					});
+				});
+				setResults(initResults);
+			});
 		});
 	}, [loaded]);
 	useEffect(() => {
@@ -207,7 +218,7 @@ function App() {
           `}
 									width="512"
 									height="512"
-									title={`workflow:${workflow}\nfilename: ${item.filename}\n\ntags: ${item.tags ?? ""}\n(seed: ${item.random})\n\nmodels: ${item.models ?? ""}\n\nloras: ${item.loras ?? ""}`}
+									title={`workflow:${workflow}\nfilename: ${item.filename}\ncollection: ${item.subfolder}\n\ntags: ${item.tags ?? ""}\n(seed: ${item.random})\n\nmodels: ${item.models ?? ""}\n\nloras: ${item.loras ?? ""}`}
 									alt={item.filename}
 									className="result-image"
 								></img>

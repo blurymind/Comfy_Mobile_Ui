@@ -47,30 +47,32 @@ server.PromptServer.instance.routes.static("/fireplace", WEBROOT)
 # can run from Krita with 
 # source ~/.local/share/krita/ai_diffusion/server/venv/bin/activate && python ./main.py --listen 0.0.0.0 --enable-cors-header '*'
 
+# https://docs.comfy.org/essentials/comms_routes
 
 COMFY_OUTPUTS = os.path.join(os.path.dirname(os.path.dirname(ROOT_FOLDER)), 'output')
 server.PromptServer.instance.routes.static("/fireplace/outputs", WEBROOT)
-@server.PromptServer.instance.routes.get("/fireplace/fs")
+@server.PromptServer.instance.routes.post("/fireplace/fs")
 async def get_fs_info(request):
     print(f'REQUESTED FS DATA :: {request}')
     outpus_directories = {}
     for path in os.listdir(COMFY_OUTPUTS):
         if not os.path.isfile(path):
             print(f'---path: {path}')
-            
             path_files = []
             try:
-                for sub_path in os.listdir(os.path.join(COMFY_OUTPUTS, path)):
-                    path_files.append(sub_path)
+                subfolder = os.path.join(COMFY_OUTPUTS, path)
+                for file_name in os.listdir(subfolder):
+                    path_files.append({"file_name": file_name, "path": os.path.join(subfolder, file_name) })
             except:
-                print(f'Couldnt get files for {sub_path}')
+                print(f'Couldnt get files for {subfolder}')
             if len(path_files) > 0:
                 outpus_directories[path] = {}
                 outpus_directories[path] = path_files
-            
-            
     return web.json_response(outpus_directories)
 
+@server.PromptServer.instance.routes.get("/fireplace/fs-make")
+async def fs_make_dir(request):
+    pass
 
 print(f' --- COMFY folder: {COMFY_OUTPUTS}')
 
