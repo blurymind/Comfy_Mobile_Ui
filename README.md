@@ -8,9 +8,9 @@ You may say that this has been done before, but this one is a bit more than the 
 ## Features
 - Written in React with usability in mind - to improve the process of crafting prompts that are sent to be rendered to a workflow. Easy and intuitive access on any device from anywhere in your local network.
 - Extensive prompt editor that lets you use a tagging system instead of just the usual basic text field (yuck). The end result is in the end still a string that concatinates them with commas between each tag.
-- You can save tags ( a tag can be a keyword or an entire sentence) and combine them in different ways. You can bookmark previously succesful tag combinations and reuse them any time.
-- The UI makes sure that tags are easy to search and not getting duplicated as you add new ones.
-- Your positive and Negative prompts can be separated from yoour main query promtps- so you can persist them as part of the workflow file that is loaded. You can still edit them, but they are in a different tab and they get added after your main prompt query.
+- You can save tags (a tag can be a keyword or an entire sentence) and combine them in different ways. You can bookmark previously succesful tag combinations and reuse them any time.
+- The UI makes sure that tags are easy to search and bookmarks are not getting duplicated as you add new ones.
+- Your positive and Negative prompts can be separated from your main query promtps- so you can persist them as part of the workflow file that is loaded. You can still edit them, but they are in a different tab and they get added after your main prompt query.
 - The render and preview button is right under your finger, you dont have to keep panning around a big and complicated canvas to try prompts out
 - Prompt results can be bookmarked or deleted similar to how krita lets you do it. You can re-view them at any point, organised by collection via the workflow name.
 - Batch render - this lets you tell comfyui to render a query setup many times and it also reports progress as it goes - populating the results view in a scrollable view. Kind of like the instagram of AI.
