@@ -27,7 +27,7 @@ Spin up comfyUI.
 You then can access it going to the URL: `http://[comfy address]:[comfy port]/fireplace`. Eg: `http://127.0.0.1:8188/fireplace`
 
 Note that you need to export your comfyui workflow to
- `cozy-fireplace/comfyui-mobile-console/public/workflows/default.json`
+ `cozy-fireplace/workflow-apis`
 
  The application requires that workflow to have at least one positive (not starting with the word "negative") `CLIPTextEncode` and at least one output node. For now it can only output images. Test your workflow in comfyui before trying to load it in this app and make sure it outputs an image.
  Make sure that you export it as API json file.
