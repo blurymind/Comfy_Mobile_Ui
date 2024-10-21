@@ -6,9 +6,9 @@ from aiohttp import web
 import json
 
 ROOT_FOLDER = os.path.dirname(os.path.realpath(__file__))
-WEBROOT = os.path.join(ROOT_FOLDER, "comfyui-mobile-console", "dist")
+WEBROOT = os.path.join(ROOT_FOLDER, "frontend", "dist")
 WORKFLOW_COLLECTION = os.path.join(ROOT_FOLDER, "workflow-apis")
-FIREPLACE_UI_PUBLIC = os.path.join(ROOT_FOLDER, "comfyui-mobile-console", "public")
+FIREPLACE_UI_PUBLIC = os.path.join(ROOT_FOLDER, "frontend", "public")
 
 @server.PromptServer.instance.routes.get("/fireplace")
 def fireplace(request):
