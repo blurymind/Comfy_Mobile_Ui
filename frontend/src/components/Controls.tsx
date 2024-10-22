@@ -80,6 +80,8 @@ export interface Props {
 	workflowName: string;
 	batch: number;
 	setBatch: any;
+	bookmarkedPrompts: any;
+	setBookmarkedPrompts: any;
 }
 export default ({
 	workflow,
@@ -92,9 +94,11 @@ export default ({
 	setAltWorkflow,
 	setBatch,
 	batch,
+	bookmarkedPrompts,
+	setBookmarkedPrompts,
 }: Props) => {
 	const suffixTags = useMemo(() => getWorkflowText(workflow), [workflow]);
-	console.log({ altWorkflow });
+	// console.log({ altWorkflow });
 	const [inputLabels, inputData] = useMemo(
 		() => getControllers(altWorkflow),
 		[altWorkflow, suffixTags],
@@ -154,6 +158,8 @@ export default ({
 											onSetInput(input),
 											`${workflowName}${item.class_type}${inpIndex}`,
 											defaultPromptValue,
+											bookmarkedPrompts,
+											setBookmarkedPrompts,
 										);
 									}
 									return null;

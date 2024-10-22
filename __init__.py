@@ -1,9 +1,12 @@
+import glob
 from .mobile import NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
 import os
 import server
 import folder_paths
 from aiohttp import web
 import json
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 ROOT_FOLDER = os.path.dirname(os.path.realpath(__file__))
 WEBROOT = os.path.join(ROOT_FOLDER, "frontend", "dist")
@@ -51,28 +54,92 @@ server.PromptServer.instance.routes.static("/fireplace", WEBROOT)
 
 COMFY_OUTPUTS = os.path.join(os.path.dirname(os.path.dirname(ROOT_FOLDER)), 'output')
 server.PromptServer.instance.routes.static("/fireplace/outputs", WEBROOT)
-@server.PromptServer.instance.routes.post("/fireplace/fs")
+@server.PromptServer.instance.routes.get("/fireplace/fs") # use post to request specific data
 async def get_fs_info(request):
     print(f'REQUESTED FS DATA :: {request}')
     outpus_directories = {}
-    for path in os.listdir(COMFY_OUTPUTS):
-        if not os.path.isfile(path):
-            print(f'---path: {path}')
-            path_files = []
-            try:
-                subfolder = os.path.join(COMFY_OUTPUTS, path)
-                for file_name in os.listdir(subfolder):
-                    path_files.append({"file_name": file_name, "path": os.path.join(subfolder, file_name) })
-            except:
-                print(f'Couldnt get files for {subfolder}')
-            if len(path_files) > 0:
-                outpus_directories[path] = {}
-                outpus_directories[path] = path_files
-    return web.json_response(outpus_directories)
+    prompts = {}
+    subfolders = [ f.path for f in os.scandir(COMFY_OUTPUTS) if f.is_dir() ]
+    for subfolder in subfolders:
+        print(f'---path: {subfolder}')
+        path_files = []
+        dir_name = os.path.basename(subfolder)
+        try:
+            # print(f'-- SUBF: {subfolder}')
+            os.chdir(subfolder)
+            files = sorted(filter(os.path.isfile, os.listdir('.')), key=os.path.getmtime)
+            # print(f'-----> FILES {files}')
+            for file_name in files:                
+                # with Image.open(os.path.join(subfolder, file_name)) as image:
+                #     exifdata = image.getexif()
+                #     for tag_id in exifdata:
+                #         # get the tag name, instead of human unreadable tag id
+                #         tag = TAGS.get(tag_id, tag_id)
+                #         data = exifdata.get(tag_id)
+                #         # decode bytes 
+                #         if isinstance(data, bytes):
+                #             data = data.decode()
+                #         print(f"{tag:25}: {data}")
+                # print(f'file ---------- {file_name}')
+                if file_name.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+                    path_files.append({"filename": file_name, "path": os.path.join(subfolder, file_name), "subfolder": dir_name })
+
+        except:
+            print(f'Couldnt get files for {subfolder}')
+        print(f'=== DIR NAME: {dir_name}')
+        outpus_directories[dir_name] = {}
+        outpus_directories[dir_name] = path_files
+
+        prompts_file_path = os.path.join(subfolder, 'prompts.json')
+        try:
+            with open(prompts_file_path, 'r') as prompts_file:
+                prompt_data = json.load(prompts_file)
+                prompts[dir_name] = prompt_data
+                print(f'-> loaded prompt data: {dir_name}: {prompt_data}')
+        except:
+            print(f'File does not exist {prompts_file_path}')
+
+    return web.json_response({"files": outpus_directories, "prompts": prompts})
 
 @server.PromptServer.instance.routes.get("/fireplace/fs-make")
 async def fs_make_dir(request):
     pass
+
+@server.PromptServer.instance.routes.post("/fireplace/fs-move")
+async def fs_move_to_dir(request):
+    json_content =  await request.json()
+    subfolder = json_content['subfolder']
+    files = json_content['files']
+    workflow = json_content['workflow']
+    new_files = {}
+    for file in files.values():
+        old_filename = file['filename']
+        filename, file_extension = os.path.splitext(old_filename)
+        new_filename = os.path.splitext(workflow)[0] + '-' + str(file['random']) + '-' + filename + file_extension
+        file_path = os.path.join(COMFY_OUTPUTS, old_filename)
+        move_to = os.path.join(COMFY_OUTPUTS, subfolder, new_filename)
+        # print(f'file data: path: {file_path} --> {move_to}')
+        new_files[new_filename] = {**file, "filename": new_filename}
+        os.rename(file_path, move_to)
+    print(f'-- NEW FILES: {new_files}')
+    return web.json_response(new_files)
+
+@server.PromptServer.instance.routes.post("/fireplace/fs-create")
+async def fs_create_dir(request):
+    json_content =  await request.json()
+    collection = json_content['collection']
+    directory = os.path.join(COMFY_OUTPUTS, collection)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return web.json_response({})
+
+@server.PromptServer.instance.routes.post("/fireplace/fs-rename")
+async def fs_rename_dir(request):
+    json_content =  await request.json()
+    rename_from = json_content['from']
+    rename_to = json_content['to']
+    os.rename(os.path.join(COMFY_OUTPUTS, rename_from), os.path.join(COMFY_OUTPUTS, rename_to))
+    return web.json_response({})
 
 print(f' --- COMFY folder: {COMFY_OUTPUTS}')
 

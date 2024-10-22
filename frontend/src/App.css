@@ -53,11 +53,27 @@
 	border-radius: 4px;
 }
 .prompt-field {
+	display: flex;
+	flex: 1;
 	overflow: auto;
 	max-height: 25vh;
 	width: calc(100vw - 3px);
 	max-width: 90vw;
 	min-height: 30vh;
+}
+.prompt-field > div:first-child {
+	flex: 1;
+}
+.prompt-field > div:nth-child(2) {
+	max-width: 200px;
+}
+.prompt-editor {
+	position: relative;
+}
+.bookmakrs-selector {
+	position: absolute;
+	right: -26px;
+	top: 0;
 }
 
 .tab-panel {
@@ -74,6 +90,10 @@
 	position: absolute;
 	bottom: 0;
 	right: 0;
+	opacity: 0.5;
+}
+.render-button:hover {
+	opacity: 1;
 }
 .result-image {
 	object-fit: contain;
@@ -86,10 +106,34 @@
 
 .workflow-selector {
 	max-width: 510px;
-	width: 80vw;
+	flex: 1;
+}
+
+.header-controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 3px;
+	justify-content: space-between;
 	position: sticky;
 	top: 1px;
 	right: 3px;
 	margin: auto;
+	align-items: center;
 	background-color: rgba(0, 0, 0, 0.65);
+}
+.header-controls:hover {
+	top: 1px;
+}
+
+@media (width <= 500px) {
+	.header-controls {
+		font-size: small;
+	}
+	.render-button {
+		opacity: 1;
+	}
+}
+.react-dropdown-select-item-selected {
+	background: #0074d9;
+	color: #fff;
 }
