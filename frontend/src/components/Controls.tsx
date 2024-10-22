@@ -81,7 +81,7 @@ export interface Props {
 	batch: number;
 	setBatch: any;
 	bookmarkedPrompts: any;
-	setBookmarkedPrompts: any;
+	onAddBookmarkedPrompt: any;
 }
 export default ({
 	workflow,
@@ -95,7 +95,7 @@ export default ({
 	setBatch,
 	batch,
 	bookmarkedPrompts,
-	setBookmarkedPrompts,
+	onAddBookmarkedPrompt,
 }: Props) => {
 	const suffixTags = useMemo(() => getWorkflowText(workflow), [workflow]);
 	// console.log({ altWorkflow });
@@ -159,7 +159,7 @@ export default ({
 											`${workflowName}${item.class_type}${inpIndex}`,
 											defaultPromptValue,
 											bookmarkedPrompts,
-											setBookmarkedPrompts,
+											onAddBookmarkedPrompt,
 										);
 									}
 									return null;

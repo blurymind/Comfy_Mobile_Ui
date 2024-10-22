@@ -8,7 +8,7 @@ export interface Props {
 	defaultPromptValue?: string;
 	onChange: any;
 	bookmarkedPrompts: any;
-	setBookmarkedPrompts: any;
+	onAddBookmarkedPrompt: any;
 }
 
 export const toSelectPropList = (input: Array<string>) => input.map((value:any)=> ({value, label:value}))
@@ -18,7 +18,7 @@ export default ({
 	value,
 	defaultPromptValue,
 	bookmarkedPrompts,
-	setBookmarkedPrompts,
+	onAddBookmarkedPrompt,
 }: Props) => {
 	const selectRef = useRef(null);
 	const [tabIndex, setTabIndex] = useLocalStorage("promptTabIndex", 0);
@@ -86,9 +86,9 @@ export default ({
 	);
 
 	const BookmarkSelector = useMemo(() => {
-		const bookmarkedPromptsOptions = Object.keys(bookmarkedPrompts ?? {})
+		const bookmarkedPromptsOptions: any = Object.keys(bookmarkedPrompts ?? {})
 			.map((key) => ({ label: key, value: bookmarkedPrompts[key] }))
-			.concat([{ value: "", label: " Add bookmark" }]);
+			// .concat([{ value: "", label: " Add bookmark" }]);
 		console.log({ bookmarkedPromptsOptions, bookmarkedPrompts, value });
 
 		const onChange = (newSelected: any) => {
@@ -106,12 +106,18 @@ export default ({
 				onSetNewTags(newTags);
 			}
 		}
+		const onCreateNew = (newBookmark: any) => {
+			console.log({newBookmark, bookmarkedPrompts})
+			const tags = promptTags.join(',')
+			const key = newBookmark.value;
+			onAddBookmarkedPrompt(key, {tags, text: textPrompt})
+		}
 		return (
 			<div className="bookmakrs-selector">
 				<Select
 					options={bookmarkedPromptsOptions}
 					onChange={onChange}
-					contentRenderer={() => <div title="bookamrks">Bookmarks</div>}
+					// contentRenderer={() => <div title="bookamrks">Bookmarks</div>}
 					optionRenderer={(item: any) => (
 						<div
 						key={`${item.value}`}
@@ -125,6 +131,8 @@ export default ({
 					)}
 					values={[]}
 					searchable
+					create
+					onCreateNew={onCreateNew}
 					dropdownGap={0}
 				/>
 			</div>

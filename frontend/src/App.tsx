@@ -83,7 +83,7 @@ function App() {
 		"currentCollection",
 		"",
 	);
-	const [bookmarkedPrompts, setBookmarkedPrompts] = useState<any>({});
+	const [bookmarkedPrompts, setBookmarkedPrompts] = useLocalStorage<any>("bookmarkedPrompts", {});
 	const onSetCurrentCollection = (nextCollection: string) => {
 		if (nextCollection in collections) {
 			//todo?
@@ -92,6 +92,16 @@ function App() {
 		}
 		setCurrentCollection(nextCollection);
 	};
+	const onAddBookmarkedPrompt = (key: string, newBookmark: {tags: string}) => {
+		console.log({newBookmark,key})
+		setBookmarkedPrompts((prev:any) => ({
+			...prev,
+			[currentCollection]: {
+				...prev[currentCollection],
+				[key]: newBookmark
+			}
+		}))// todo then we save to the json file of the collectiong, grr
+	}
 	console.log({ currentCollection, collections });
 	// const [results, setResults] = useState<
 	// 	Array<{
@@ -415,7 +425,7 @@ function App() {
 							defaultPromptValue={defaultPromptValue}
 							//@ts-ignore
 							bookmarkedPrompts={bookmarkedPrompts[currentCollection]}
-							setBookmarkedPrompts={setBookmarkedPrompts}
+							onAddBookmarkedPrompt={onAddBookmarkedPrompt}
 						></Controls>
 					)}
 					{!workflow && <div>No workflow found</div>}
