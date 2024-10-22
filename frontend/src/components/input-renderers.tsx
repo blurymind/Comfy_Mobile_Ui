@@ -6,7 +6,7 @@ export const textRenderer = (
 	key: string,
 	defaultPromptValue: any,
 	bookmarkedPrompts: any,
-	setBookmarkedPrompts: any,
+	onAddBookmarkedPrompt: any,
 ) => (
 	<PromptEditor
 		value={input.value}
@@ -14,6 +14,6 @@ export const textRenderer = (
 		key={key}
 		defaultPromptValue={defaultPromptValue}
 		bookmarkedPrompts={bookmarkedPrompts}
-		setBookmarkedPrompts={setBookmarkedPrompts}
+		onAddBookmarkedPrompt={onAddBookmarkedPrompt}
 	/>
 );
