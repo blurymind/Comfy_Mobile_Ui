@@ -11,8 +11,11 @@ export interface Props {
 	onAddBookmarkedPrompt: any;
 }
 
-export const toSelectPropList = (input: Array<string>) => input.map((value:any)=> ({value, label:value}))
-export const fromSelectPropList  = (input: Array<{value:string,label:string}>) => input.map((item:any)=> item.value)
+export const toSelectPropList = (input: Array<string>) =>
+	input.map((value: any) => ({ value, label: value }));
+export const fromSelectPropList = (
+	input: Array<{ value: string; label: string }>,
+) => input.map((item: any) => item.value);
 export default ({
 	onChange,
 	value,
@@ -22,24 +25,38 @@ export default ({
 }: Props) => {
 	const selectRef = useRef(null);
 	const [tabIndex, setTabIndex] = useLocalStorage("promptTabIndex", 0);
-	const [availablePromptTags, setAvailablePromptTags] = useLocalStorage<Array<string>>("availablePromptTags", []);// can be selected
-	const [promptTags, setPromptTags] = useLocalStorage<Array<string>>("promptTags", []);// selected now
-	const [textPrompt, setTextPrompt] = useLocalStorage('defaultPromptValue',defaultPromptValue);
+	const [availablePromptTags, setAvailablePromptTags] = useLocalStorage<
+		Array<string>
+	>("availablePromptTags", []); // can be selected
+	const [promptTags, setPromptTags] = useLocalStorage<Array<string>>(
+		"promptTags",
+		[],
+	); // selected now
+	const [textPrompt, setTextPrompt] = useLocalStorage(
+		"defaultPromptValue",
+		defaultPromptValue,
+	);
 	const [isTagsPinned, setIsTagsPinned] = useLocalStorage("tagsMenuOpen", true);
 
 	// console.log({ isTagsPinned, unusedTags });
 	useEffect(() => {
-		console.log({ promptTags, textPrompt });
 		const combinedPrompt = `${promptTags.join(",")}, ${textPrompt}`;
+		console.log('-- onChange prompt',{ promptTags, textPrompt, combinedPrompt });
 		onChange(combinedPrompt);
 	}, [promptTags, textPrompt]);
 
 	const onSetNewTags = (newOptions: Array<string>) => {
-		const newUniqueTagOptions = newOptions.filter(newItem => !promptTags.some(option=> option === newItem))
-		setPromptTags([...promptTags, ...newUniqueTagOptions])
-		const newAvailablePromptTagsNoDups = new Set([...availablePromptTags,...promptTags, ...newUniqueTagOptions])
-		setAvailablePromptTags(Array.from(newAvailablePromptTagsNoDups))
-	}
+		const newUniqueTagOptions = newOptions.filter(
+			(newItem) => !promptTags.some((option) => option === newItem),
+		);
+		setPromptTags([...promptTags, ...newUniqueTagOptions]);
+		const newAvailablePromptTagsNoDups = new Set([
+			...availablePromptTags,
+			...promptTags,
+			...newUniqueTagOptions,
+		]);
+		setAvailablePromptTags(Array.from(newAvailablePromptTagsNoDups));
+	};
 	const onCreateNew = (newOption: string) => {
 		// console.log('-- create new tag -->',{ newOption });
 		// const hasOption = selectOptions.find(
@@ -48,8 +65,8 @@ export default ({
 		// // console.log({ newOption, hasOption });
 		// if (hasOption) return;
 		// setSelectOptions((prev) => [...prev, newOption]);
-		console.log({newOption})
-		onSetNewTags([newOption])
+		console.log({ newOption });
+		onSetNewTags([newOption]);
 	};
 
 	const onChangeTextPrompt = (event: any) => {
@@ -86,32 +103,30 @@ export default ({
 	);
 
 	const BookmarkSelector = useMemo(() => {
-		const bookmarkedPromptsOptions: any = Object.keys(bookmarkedPrompts ?? {})
-			.map((key) => ({ label: key, value: bookmarkedPrompts[key] }))
-			// .concat([{ value: "", label: " Add bookmark" }]);
+		const bookmarkedPromptsOptions: any = Object.keys(
+			bookmarkedPrompts ?? {},
+		).map((key) => ({ label: key, value: bookmarkedPrompts[key] }));
+		// .concat([{ value: "", label: " Add bookmark" }]);
 		console.log({ bookmarkedPromptsOptions, bookmarkedPrompts, value });
 
 		const onChange = (newSelected: any) => {
 			console.log({ newSelected, promptTags });
 			if (!newSelected[0]) {
-				const ask = prompt("Create a new bookmark?", "my bookmark");
 				return;
 			}
-			const newTags = newSelected[0].value?.tags
-				?.split(",")
-				
-			
+			const newTags = newSelected[0].value?.tags?.split(",");
+
 			if (newTags) {
-				console.log('--- set new tags', {newTags})
+				console.log("--- set new tags", { newTags });
 				onSetNewTags(newTags);
 			}
-		}
+		};
 		const onCreateNew = (newBookmark: any) => {
-			console.log({newBookmark, bookmarkedPrompts})
-			const tags = promptTags.join(',')
+			console.log({ newBookmark, bookmarkedPrompts });
+			const tags = promptTags.join(",");
 			const key = newBookmark.value;
-			onAddBookmarkedPrompt(key, {tags, text: textPrompt})
-		}
+			onAddBookmarkedPrompt(key, { tags, text: textPrompt });
+		};
 		return (
 			<div className="bookmakrs-selector">
 				<Select
@@ -120,8 +135,8 @@ export default ({
 					// contentRenderer={() => <div title="bookamrks">Bookmarks</div>}
 					optionRenderer={(item: any) => (
 						<div
-						key={`${item.value}`}
-							onClick={()=> onChange([{value: {tags: item.value.tags,}}])}
+							key={`${item.value}`}
+							onClick={() => onChange([{ value: { tags: item.value.tags } }])}
 							// style={{width: '300px'}}
 							// className={`flex spaced ${item.value === currentCollection ? "react-dropdown-select-item-selected" : ""}`}
 						>
@@ -137,9 +152,9 @@ export default ({
 				/>
 			</div>
 		);
-	}, [bookmarkedPrompts, setPromptTags, ]);
-	const promptTagsProp: any = toSelectPropList(promptTags)
-	console.log({ value, promptTagsProp, availablePromptTags})
+	}, [bookmarkedPrompts, setPromptTags]);
+	const promptTagsProp: any = toSelectPropList(promptTags);
+	console.log({ value, promptTagsProp, availablePromptTags });
 
 	return (
 		<div
@@ -166,8 +181,12 @@ export default ({
 							// style={{overflow:"auto"}}
 						>
 							<Select
-								options={toSelectPropList(availablePromptTags.filter(item => !promptTags.includes(item)))}
-								onCreateNew={(item: any)=> onCreateNew(item.value)}
+								options={toSelectPropList(
+									availablePromptTags.filter(
+										(item) => !promptTags.includes(item),
+									),
+								)}
+								onCreateNew={(item: any) => onCreateNew(item.value)}
 								create
 								ref={selectRef}
 								keepOpen={isTagsPinned}
@@ -175,7 +194,7 @@ export default ({
 								multi
 								values={promptTagsProp}
 								onChange={(newTags) => {
-									console.log('---- NEW TAGS SET ', {newTags})
+									console.log("---- NEW TAGS SET ", { newTags });
 									setIsTagsPinned(false);
 									setPromptTags(fromSelectPropList(newTags));
 								}}

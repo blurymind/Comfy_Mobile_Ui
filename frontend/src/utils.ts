@@ -44,77 +44,46 @@ export const load_outputs = (onDone: any) => {
 		});
 };
 
+export const send_post_request = (path: string, data: any, onDone: any) => {
+	fetch(`${COMFY_UI_URL}${path}`, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	})
+		.then((res) => res.json())
+		.then((result: any) => {
+			onDone(result);
+		})
+		.catch((e) => {
+			console.error(e);
+			onDone();
+		});
+};
+
 export const move_outputs = (
 	files: any,
 	subfolder: string,
 	workflow: string,
 	onDone: any,
 ) => {
-	console.log({
-		subfolder,
-		files,
-	});
-	fetch(`${COMFY_UI_URL}/fireplace/fs-move`, {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			subfolder,
-			files,
-			workflow,
-		}),
-	})
-		.then((res) => res.json())
-		.then((result: any) => {
-			onDone(result);
-		})
-		.catch((e) => {
-			console.error(e);
-			onDone();
-		});
+	send_post_request(
+		"/fireplace/fs-move",
+		{ subfolder, files, workflow },
+		onDone,
+	);
+};
+
+export const fs_update_bookmarks = (data: any, onDone: any) => {
+	send_post_request("/fireplace/fs-update-bookmarks", data, onDone);
 };
 export const rename_collection = (from: string, to: string, onDone: any) => {
-	fetch(`${COMFY_UI_URL}/fireplace/fs-rename`, {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			from,
-			to,
-		}),
-	})
-		.then((res) => res.json())
-		.then((result: any) => {
-			onDone(result);
-		})
-		.catch((e) => {
-			console.error(e);
-			onDone();
-		});
+	send_post_request("/fireplace/fs-rename", { from, to }, onDone);
 };
 export const create_collection = (collection: string, onDone: any) => {
-	fetch(`${COMFY_UI_URL}/fireplace/fs-create`, {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			collection,
-		}),
-	})
-		.then((res) => res.json())
-		.then((result: any) => {
-			onDone(result);
-		})
-		.catch((e) => {
-			console.error(e);
-			onDone();
-		});
+	send_post_request("/fireplace/fs-create", { collection }, onDone);
 };
 export const PROTOCOL = window.location.protocol === "https:" ? "wss:" : "ws:";
 

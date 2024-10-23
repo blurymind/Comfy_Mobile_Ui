@@ -4,6 +4,7 @@ import { useLocalStorage } from "./hooks";
 import {
 	COMFY_UI_URL,
 	create_collection,
+	fs_update_bookmarks,
 	getLoras,
 	getModels,
 	getWorkflowText,
@@ -67,7 +68,6 @@ const SelectCollectionOption = ({
 	);
 };
 
-// console.log({defineConfig})/
 function App() {
 	const [count, setCount] = useState<number>(0);
 	const [isGenerating, setIsGenerating] = useState(false);
@@ -83,7 +83,10 @@ function App() {
 		"currentCollection",
 		"",
 	);
-	const [bookmarkedPrompts, setBookmarkedPrompts] = useLocalStorage<any>("bookmarkedPrompts", {});
+	const [bookmarkedPrompts, setBookmarkedPrompts] = useLocalStorage<any>(
+		"bookmarkedPrompts",
+		{},
+	);
 	const onSetCurrentCollection = (nextCollection: string) => {
 		if (nextCollection in collections) {
 			//todo?
@@ -92,16 +95,27 @@ function App() {
 		}
 		setCurrentCollection(nextCollection);
 	};
-	const onAddBookmarkedPrompt = (key: string, newBookmark: {tags: string}) => {
-		console.log({newBookmark,key})
-		setBookmarkedPrompts((prev:any) => ({
-			...prev,
-			[currentCollection]: {
-				...prev[currentCollection],
-				[key]: newBookmark
-			}
-		}))// todo then we save to the json file of the collectiong, grr
-	}
+	const onAddBookmarkedPrompt = (
+		key: string,
+		newBookmark: { tags: string },
+	) => {
+		console.log({ newBookmark, key });
+		setBookmarkedPrompts((prev: any) => {
+			fs_update_bookmarks(
+				{ action: "add", key, value: newBookmark, collection: currentCollection },
+				(result: any) => {
+					console.log("UPDATED BOOKMARKS", { result });
+				},
+			);
+			return {
+				...prev,
+				[currentCollection]: {
+					...prev[currentCollection],
+					[key]: newBookmark,
+				},
+			};
+		}); // todo then we save to the json file of the collectiong, grr
+	};
 	console.log({ currentCollection, collections });
 	// const [results, setResults] = useState<
 	// 	Array<{

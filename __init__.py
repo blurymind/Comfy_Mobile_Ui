@@ -9,6 +9,7 @@ from PIL import Image
 from PIL.ExifTags import TAGS
 
 ROOT_FOLDER = os.path.dirname(os.path.realpath(__file__))
+TAGS_FOLDER = os.path.join(ROOT_FOLDER, "tags")
 WEBROOT = os.path.join(ROOT_FOLDER, "frontend", "dist")
 WORKFLOW_COLLECTION = os.path.join(ROOT_FOLDER, "workflow-apis")
 FIREPLACE_UI_PUBLIC = os.path.join(ROOT_FOLDER, "frontend", "public")
@@ -105,6 +106,41 @@ async def get_fs_info(request):
 async def fs_make_dir(request):
     pass
 
+@server.PromptServer.instance.routes.post("/fireplace/fs-update-bookmarks")
+async def fs_update_bookmarks(request):
+    result = {}
+    json_content =  await request.json()
+    action = json_content['action'] #add/remove/update
+    key = json_content['key']
+    data = json_content['value']
+    subfolder = json_content['collection']
+    
+    prompts_file_path = os.path.join(COMFY_OUTPUTS, subfolder, 'prompts.json')
+    print(f'prompts file: {prompts_file_path} -- action {action} --key {key} --collection {subfolder}')
+    if not os.path.exists(prompts_file_path):
+        print(f'{prompts_file_path} file is empty or missing!')
+        result[key] = {}
+        with open(prompts_file_path, "w") as file:
+            print(f'CREATE -- NEW CONTENT: {result}')
+            json.dump(result, file)
+            file.close()
+
+    old_contents = {}
+    # return web.json_response(result) # the new data
+    with open(prompts_file_path) as file:
+        try:
+            old_contents = json.load(file)
+            result.update(old_contents)
+        except:
+            print(f'Failed to load json from {prompts_file_path}')
+
+    with open(prompts_file_path, 'w') as file:   
+        result[key] = data
+        json.dump(result, file)
+        result = result
+        file.close()
+    return web.json_response(result) # the new data
+
 @server.PromptServer.instance.routes.post("/fireplace/fs-move")
 async def fs_move_to_dir(request):
     json_content =  await request.json()
@@ -141,8 +177,21 @@ async def fs_rename_dir(request):
     os.rename(os.path.join(COMFY_OUTPUTS, rename_from), os.path.join(COMFY_OUTPUTS, rename_to))
     return web.json_response({})
 
-print(f' --- COMFY folder: {COMFY_OUTPUTS}')
 
+@server.PromptServer.instance.routes.get("/fireplace/fs-tags.json")
+async def fs_load_tags(request): #loads all immutable tags
+    result = {}
+    tag_files = [ f.path for f in os.scandir(TAGS_FOLDER) if f.is_file() ]
+    for filename in tag_files:
+        if filename.endswith('.csv'):
+            result_tags = set()
+            with open(filename) as file:
+                for line in file:
+                    new_tag = line.split(',')[0]
+                    result_tags.add(new_tag)
+            result[os.path.basename(filename)] = list(result_tags)
+    return web.json_response(result)
+print(f' --- COMFY folder: {COMFY_OUTPUTS}')
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
 
 
