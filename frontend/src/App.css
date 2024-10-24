@@ -59,7 +59,7 @@
 	max-height: 25vh;
 	width: calc(100vw - 3px);
 	max-width: 90vw;
-	min-height: 30vh;
+	/* min-height: 30vh; breaks scroll */
 }
 .prompt-field > div:first-child {
 	flex: 1;
@@ -136,4 +136,52 @@
 .react-dropdown-select-item-selected {
 	background: #0074d9;
 	color: #fff;
+}
+
+.no-user-select {
+	user-select: none;
+}
+.sortable-area {
+	gap: 3px;
+}
+.selectable-tag {
+	display: flex;
+	gap: 2px;
+	border: 1px grey solid;
+	padding: 0 1px;
+	background: black;
+	opacity: 0.7;
+}
+.selectable-tag:hover {
+	opacity: 1;
+}
+.remove-tag {
+	border: 1px solid;
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	font-size: small;
+}
+.tag-search-field {
+	width: 60px;
+}
+.tag-search-field:focus {
+	width: 130px;
+}
+
+.tag-menu-item {
+	color: rgb(160, 160, 160);
+	background-color: rgb(22, 22, 22);
+}
+.react-dropdown-select-item:hover,
+.tag-menu-item:hover {
+	color: black !important;
+	background-color: aqua !important;
+}
+.react-dropdown-select-item,
+.react-dropdown-select-dropdown {
+	color: rgb(160, 160, 160) !important;
+	background-color: rgb(22, 22, 22) !important;
+	border: none !important;
+	padding: 0 2px !important;
 }

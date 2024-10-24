@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { useLocalStorage } from "./hooks";
 import {
@@ -23,7 +23,7 @@ const SelectCollectionOption = ({
 	currentCollection,
 	setCurrentCollection,
 	onLoadOutputs,
-	setCollections,
+	// setCollections, //todo
 }: any) => {
 	const onRenameCollection = () => {
 		const ask = prompt(`Rename this "${item.label}" collection?`, item.label);
@@ -102,7 +102,12 @@ function App() {
 		console.log({ newBookmark, key });
 		setBookmarkedPrompts((prev: any) => {
 			fs_update_bookmarks(
-				{ action: "add", key, value: newBookmark, collection: currentCollection },
+				{
+					action: "add",
+					key,
+					value: newBookmark,
+					collection: currentCollection,
+				},
 				(result: any) => {
 					console.log("UPDATED BOOKMARKS", { result });
 				},
