@@ -52,6 +52,7 @@ export default ({
 		const newUniqueTagOptions = newOptions.filter(
 			(newItem) => !promptTags.some((option) => option === newItem),
 		);
+		// todo add an option here to merge to the previous ones - ...promptTags, ...newUnique...
 		setPromptTags([...newUniqueTagOptions]);
 		const newAvailablePromptTagsNoDups = new Set([
 			...availablePromptTags,
