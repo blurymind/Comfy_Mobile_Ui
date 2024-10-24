@@ -52,7 +52,7 @@ export default ({
 		const newUniqueTagOptions = newOptions.filter(
 			(newItem) => !promptTags.some((option) => option === newItem),
 		);
-		setPromptTags([...promptTags, ...newUniqueTagOptions]);
+		setPromptTags([...newUniqueTagOptions]);
 		const newAvailablePromptTagsNoDups = new Set([
 			...availablePromptTags,
 			...promptTags,
