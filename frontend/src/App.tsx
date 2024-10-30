@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import { useLocalStorage } from "./hooks";
 import {
 	COMFY_UI_URL,
 	create_collection,
+	delete_file,
 	fs_update_bookmarks,
 	getLoras,
 	getModels,
@@ -12,6 +13,7 @@ import {
 	load_outputs,
 	move_outputs,
 	rename_collection,
+	rename_file,
 	socket,
 } from "./utils";
 import Controls from "./components/Controls";
@@ -78,6 +80,7 @@ function App() {
 	const [workflows, setWorkflows] = useState<any>(null);
 	const [altWorkflow, setAltWorkflow] = useState<any>(null);
 	const [loaded, setLoaded] = useState(false);
+	// todo move these two to a hook of their own?
 	const [collections, setCollections] = useState<any>({});
 	const [currentCollection, setCurrentCollection] = useLocalStorage(
 		"currentCollection",
@@ -87,11 +90,12 @@ function App() {
 		"bookmarkedPrompts",
 		{},
 	);
+	const [filterFavorites, setFilterFavorites] = useState<boolean>(false);
 	const onSetCurrentCollection = (nextCollection: string) => {
 		if (nextCollection in collections) {
 			//todo?
 		} else {
-			setCollections({ ...collections, [nextCollection]: [] });
+			setCollections((prev: any) => ({ ...prev, [nextCollection]: [] }));
 		}
 		setCurrentCollection(nextCollection);
 	};
@@ -330,7 +334,52 @@ function App() {
 		}
 	}, [altWorkflow, loaded]);
 
-	if (!loaded) return null;
+	const onDeleteImageFile = (fileName: string, collectionName: string) => {
+		const ask = confirm(
+			`Are you sure you want to delete:\noutputs/${collectionName}/${fileName}\n\nYou cannot undo this`,
+		);
+		if (ask) {
+			delete_file(fileName, collectionName, () => {
+				setCollections((prev: any) => {
+					const nextFiles = prev[collectionName].filter(
+						(item: any) => item.filename !== fileName,
+					);
+					console.log("deleted ", fileName, collectionName, nextFiles, prev);
+					return {
+						...prev,
+						[collectionName]: nextFiles,
+					};
+				});
+			});
+		}
+	};
+	const onFavoriteImageFile = (fileName: string, collectionName: string) => {
+		const newFileName = fileName.startsWith("fav_")
+			? fileName.split("fav_")[1]
+			: `fav_${fileName}`;
+		rename_file(fileName, newFileName, collectionName, () => {
+			setCollections((prev: any) => {
+				const nextFiles = prev[collectionName].map((item: any) =>
+					item.filename === fileName
+						? { ...item, filename: newFileName }
+						: item,
+				);
+				console.log(
+					"renamed ",
+					fileName,
+					newFileName,
+					collectionName,
+					nextFiles,
+					prev,
+				);
+				return {
+					...prev,
+					[collectionName]: nextFiles,
+				};
+			});
+		});
+	};
+
 	const availableWorkflows = Object.keys(workflows ?? {});
 	const workflowOptions = availableWorkflows.map((value: any) => ({
 		value,
@@ -351,16 +400,28 @@ function App() {
 		(item: any) => item.value === currentCollection,
 	) ?? { value: currentCollection, label: currentCollection };
 
-	const displayedResults: any =
-		currentCollection in collections
-			? Object.values(collections[currentCollection])
-			: [];
+	const displayedResults: any = useMemo(() => {
+		if (!(currentCollection in collections)) return [];
+		const result = Object.values(collections[currentCollection]);
+		return filterFavorites
+			? result.filter((item: any) => item.filename.startsWith("fav_"))
+			: result;
+	}, [filterFavorites, currentCollection, collections]);
 
+	if (!loaded) return null;
 	return (
 		<>
 			<div className="layout-wrapper" id="app-root">
 				<div className="top-half" ref={resultContainerRef}>
 					<div className="header-controls">
+						<div
+							className={`fav-image ${filterFavorites ? "" : "inactive"}`}
+							onClick={() => setFilterFavorites((prev) => !prev)}
+							title="Display only favorites"
+							style={{ fontSize: "1rem", padding: "0px 1px" }}
+						>
+							❤︎
+						</div>
 						{workflowOptions.length > 0 && (
 							<div className="workflow-selector">
 								<Select
@@ -425,6 +486,24 @@ function App() {
 									alt={item.filename}
 									className="result-image"
 								></img>
+								<div
+									className="image-button bin-image"
+									onClick={() =>
+										onDeleteImageFile(item.filename, item.subfolder)
+									}
+									title="Delete file"
+								>
+									❎
+								</div>
+								<div
+									className={`image-button fav-image ${item.filename?.startsWith("fav_") ? "activated" : ""}`}
+									onClick={() =>
+										onFavoriteImageFile(item.filename, item.subfolder)
+									}
+									title="Set as favorite"
+								>
+									❤︎
+								</div>
 							</div>
 						))}
 					</div>

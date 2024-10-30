@@ -45,12 +45,43 @@
 }
 
 .output-image {
+	position: relative;
 	object-fit: contain;
 	min-width: 100px;
 	max-width: 100vw;
 }
 .output-image > img {
 	border-radius: 4px;
+}
+.image-button:not(.activated) {
+	opacity: 0;
+}
+.image-button {
+	/* filter: invert(1) grayscale(1) contrast(9); */
+	cursor: pointer;
+	position: absolute;
+	font-size: 3rem;
+	text-shadow: 1px 1px 2px black;
+}
+.output-image:hover > .image-button:not(.activated) {
+	opacity: 0.5;
+}
+.output-image:hover > .image-button:hover {
+	opacity: 1;
+}
+.bin-image {
+	color: red;
+	bottom: 3px;
+	right: 3px;
+}
+.fav-image {
+	cursor: pointer;
+	color: yellow;
+	bottom: 3px;
+	left: 3px;
+}
+.inactive {
+	opacity: 0.5;
 }
 .prompt-field {
 	display: flex;
@@ -120,6 +151,7 @@
 	margin: auto;
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.65);
+	z-index: 9999999999;
 }
 .header-controls:hover {
 	top: 1px;
@@ -147,20 +179,24 @@
 .selectable-tag {
 	display: flex;
 	gap: 2px;
-	border: 1px grey solid;
-	padding: 0 1px;
+	border: 1px transparent solid;
+	padding: 0 3px;
 	background: black;
 	opacity: 0.7;
 }
 .selectable-tag:hover {
 	opacity: 1;
+	border: 1px rgba(128, 128, 128, 0.452) solid;
 }
 .remove-tag {
-	border: 1px solid;
-	border-radius: 50%;
+	cursor: pointer;
 	width: 20px;
 	height: 20px;
 	font-size: small;
+	align-self: center;
+}
+.remove-tag:hover {
+	background-color: rgba(255, 228, 196, 0.103);
 }
 .tag-search-field {
 	width: 60px;
@@ -170,6 +206,7 @@
 }
 
 .tag-menu-item {
+	user-select: none;
 	color: rgb(160, 160, 160);
 	background-color: rgb(22, 22, 22);
 }

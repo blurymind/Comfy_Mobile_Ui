@@ -85,6 +85,23 @@ export const rename_collection = (from: string, to: string, onDone: any) => {
 export const create_collection = (collection: string, onDone: any) => {
 	send_post_request("/fireplace/fs-create", { collection }, onDone);
 };
+export const delete_file = (file: string, collection: string, onDone: any) => {
+	// note: pass empty string for file to delete a collection folder
+	send_post_request("/fireplace/fs-delete", { file, collection }, onDone);
+};
+export const rename_file = (
+	from: string,
+	to: string,
+	collection: string,
+	onDone: any,
+) => {
+	// note: pass empty string for file to delete a collection folder
+	send_post_request(
+		"/fireplace/fs-rename-file",
+		{ from, to, collection },
+		onDone,
+	);
+};
 export const PROTOCOL = window.location.protocol === "https:" ? "wss:" : "ws:";
 
 export const queue_prompt = async (prompt = {}) => {

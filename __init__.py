@@ -177,6 +177,29 @@ async def fs_rename_dir(request):
     os.rename(os.path.join(COMFY_OUTPUTS, rename_from), os.path.join(COMFY_OUTPUTS, rename_to))
     return web.json_response({})
 
+@server.PromptServer.instance.routes.post("/fireplace/fs-rename-file")
+async def fs_rename_file(request):
+    json_content =  await request.json()
+    rename_from = json_content['from']
+    rename_to = json_content['to']
+    collection  = json_content['collection']
+    print(f'--- Renaming file in {collection}: {rename_from} to {rename_to} --')
+    os.rename(os.path.join(COMFY_OUTPUTS, collection, rename_from), os.path.join(COMFY_OUTPUTS, collection, rename_to))
+    return web.json_response({})
+
+@server.PromptServer.instance.routes.post("/fireplace/fs-delete")
+async def fs_delete_dir(request):
+    json_content =  await request.json()
+    name = json_content['file']
+    collection = json_content['collection']
+    path = os.path.join(COMFY_OUTPUTS, collection, name)
+    if os.path.isfile(path):
+        print(f'Removing FILE at {path}')
+        os.remove(path)
+    else:
+        print(f'Removing FOLDER at {path}')
+        os.rmdir(path)
+    return web.json_response({})
 
 @server.PromptServer.instance.routes.get("/fireplace/fs-tags.json")
 async def fs_load_tags(request): #loads all immutable tags

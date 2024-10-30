@@ -28,9 +28,9 @@ const DragHandle = SortableHandle(({ children }: any) => (
 ));
 const SortableItem = SortableElement(({ value, onRemoveTag }: any) => (
 	<div className="selectable-tag">
-		<DragHandle>{value}</DragHandle>
+		<DragHandle>{value}</DragHandle>,
 		<div className="remove-tag" onClick={() => onRemoveTag(value)}>
-			x
+			×
 		</div>
 	</div>
 ));
@@ -95,7 +95,9 @@ export default ({
 						<div className="flex" onClick={() => onSelectItem()}>
 							{item.label}
 						</div>
-						<div onClick={onDeleteTag}>[X]</div>
+						<div onClick={onDeleteTag} className="remove-tag">
+							×
+						</div>
 					</div>
 				);
 			},
