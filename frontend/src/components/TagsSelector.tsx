@@ -57,7 +57,6 @@ export default ({
 	availablePromptTags,
 	setAvailablePromptTags,
 	onSetNewTags,
-	onAddTagsFromClipboard,
 }: any) => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isTagsPinned, setIsTagsPinned] = useState(false);
@@ -188,12 +187,6 @@ export default ({
 								value={searchQuery}
 								ref={searchRef}
 							/>
-							<div
-								onClick={() => onAddTagsFromClipboard()}
-								title="Paste tags from clipboard"
-							>
-								▼
-							</div>
 							{promptTags.map((value: any, index: any) => (
 								//@ts-ignore
 								<SortableItem

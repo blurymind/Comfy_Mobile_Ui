@@ -170,10 +170,15 @@ export default ({
 								setPromptTags={setPromptTags}
 								setAvailablePromptTags={setAvailablePromptTags}
 								availablePromptTags={availablePromptTags}
-								onAddTagsFromClipboard={onAddTagsFromClipboard}
 							></TagsSelector>
 						</div>
 					</div>
+					<button
+						onClick={() => onAddTagsFromClipboard()}
+						title="Paste tags from clipboard"
+					>
+						Paste from clipboard
+					</button>
 				</TabPanel>
 				<TabPanel>
 					<div className="prompt-field">
