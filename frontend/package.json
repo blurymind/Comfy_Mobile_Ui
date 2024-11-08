@@ -12,6 +12,7 @@
 		"comfy-krita": "source ~/.local/share/krita/ai_diffusion/server/venv/bin/activate && python ~/.local/share/krita/ai_diffusion/server/ComfyUI/main.py --listen 0.0.0.0 --enable-cors-header '*'"
 	},
 	"dependencies": {
+		"exifreader": "^4.25.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-dropdown-select": "^4.11.3",

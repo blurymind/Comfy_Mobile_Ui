@@ -120,6 +120,35 @@ export default ({
 	const promptTagsProp: any = toSelectPropList(promptTags);
 	console.log({ value, promptTagsProp, availablePromptTags });
 
+	const onPasteTextFromClipboard = () => {
+		navigator.clipboard.readText().then((clip) => {
+			console.log("clipboard", { clip });
+			const ask = confirm(
+				`Are you sure you want to replace the current text prompt with:\n\n${clip}`,
+			);
+			if (clip && ask) {
+				setTextPrompt(clip);
+			}
+		});
+	};
+	const onAddTagsFromClipboard = () => {
+		navigator.clipboard.readText().then((clip) => {
+			console.log("clipboard", { clip, textPrompt });
+			const textPromptAsArr = textPrompt?.split(",").map((item) => item.trim());
+			const filteredPrompt = clip
+				.split(",")
+				.map((item) => item.trim())
+				.filter((item) => !textPromptAsArr?.includes(item));
+			if (filteredPrompt.length === 0) return;
+			const ask = confirm(
+				`Are you sure you want to replace the current prompt with:\n\n${filteredPrompt.join(", ")}`,
+			);
+			if (ask) {
+				setPromptTags(filteredPrompt);
+			}
+		});
+	};
+
 	return (
 		<div className="flex padded-x prompt-editor" id="prompt-editor">
 			{BookmarkSelector}
@@ -141,20 +170,23 @@ export default ({
 								setPromptTags={setPromptTags}
 								setAvailablePromptTags={setAvailablePromptTags}
 								availablePromptTags={availablePromptTags}
+								onAddTagsFromClipboard={onAddTagsFromClipboard}
 							></TagsSelector>
 						</div>
 					</div>
 				</TabPanel>
 				<TabPanel>
-					<button>res</button>
-					<div className="flex">
+					<div className="prompt-field">
 						<textarea
-							className="prompt-field"
+							className="prompt-field-text"
 							onChange={onChangeTextPrompt}
 							// key={index}
 							value={textPrompt}
 						></textarea>
 					</div>
+					<button onClick={() => onPasteTextFromClipboard()}>
+						Paste from clipboard
+					</button>
 				</TabPanel>
 			</Tabs>
 		</div>

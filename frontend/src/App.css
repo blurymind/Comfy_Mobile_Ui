@@ -69,6 +69,11 @@
 .output-image:hover > .image-button:hover {
 	opacity: 1;
 }
+.clip-image {
+	color: rgb(0, 89, 255);
+	top: 3px;
+	right: 3px;
+}
 .bin-image {
 	color: red;
 	bottom: 3px;
@@ -91,6 +96,10 @@
 	width: calc(100vw - 3px);
 	max-width: 90vw;
 	/* min-height: 30vh; breaks scroll */
+}
+.prompt-field-text {
+	flex: 1;
+	height: 25vh;
 }
 .prompt-field > div:first-child {
 	flex: 1;

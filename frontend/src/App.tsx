@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import * as ExifReader from "exifreader";
 import "./App.css";
 import { useLocalStorage } from "./hooks";
 import {
@@ -19,6 +20,7 @@ import {
 import Controls from "./components/Controls";
 import Select from "react-dropdown-select";
 
+console.log({ ExifReader });
 const SelectCollectionOption = ({
 	item,
 	collections,
@@ -380,6 +382,59 @@ function App() {
 		});
 	};
 
+	const onCopyPrompt = (prompt: string) => {
+		navigator.clipboard.writeText(prompt);
+		alert(`Copied to clipboard:\n\n${prompt}`);
+	};
+	const onGetImageMeta = (fileSrc: string, fileName: string) => {
+		fetch(fileSrc)
+			.then((response) => response.blob())
+			.then((blob) => {
+				const file = new File([blob], fileName, blob);
+				try {
+					// @ts-ignore
+					ExifReader.load(file).then((tags) => {
+						// The MakerNote tag can be really large. Remove it to lower
+						// memory usage if you're parsing a lot of files and saving the
+						// tags.
+						delete tags["MakerNote"];
+						if (tags) {
+							const fileIndex = collections[currentCollection].findIndex(
+								(item: any) => item.filename === fileName,
+							);
+							if (collections[currentCollection][fileIndex].meta) return;
+							console.log("got tags::", { tags, fileName });
+							setCollections((prev: any) => {
+								const nextFIleList = [...prev[currentCollection]];
+								const data = tags.parameters?.value?.split("\n") ?? ["", ""];
+								nextFIleList[fileIndex] = {
+									...prev[currentCollection][fileIndex],
+									meta: tags,
+									prompt: data[0],
+									model: data[1],
+								};
+								return {
+									...prev,
+									[currentCollection]: nextFIleList,
+								};
+							});
+						}
+						// If you want to extract the thumbnail you can use it like
+						// this:
+						// if (tags['Thumbnail'] && tags['Thumbnail'].image) {
+						// 	const image = document.getElementById('thumbnail');
+						// 	image.classList.remove('hidden');
+						// 	image.src = 'data:image/jpg;base64,' + tags['Thumbnail'].base64;
+						// }
+					});
+					// Use the tags now present in `tags`.
+				} catch (error) {
+					console.error({ error });
+					// Handle error.
+				}
+			});
+	};
+	// const onCopyPromptOfImage = (fil)
 	const availableWorkflows = Object.keys(workflows ?? {});
 	const workflowOptions = availableWorkflows.map((value: any) => ({
 		value,
@@ -472,40 +527,51 @@ function App() {
 					</div>
 
 					<div className="flex">
-						{displayedResults.map((item: any, index: number) => (
-							<div
-								className="output-image"
-								key={`${index}-${item.filename}-${item.random}`}
-							>
-								<img
-									src={`${COMFY_UI_URL}/view?filename=${item.filename}&type=output&subfolder=${item.subfolder}&rand=${item.random}
-          `}
-									width="512"
-									height="512"
-									title={`workflow:${workflow}\nfilename: ${item.filename}\ncollection: ${item.subfolder}\n\ntags: ${item.tags ?? ""}\n(seed: ${item.random})\n\nmodels: ${item.models ?? ""}\n\nloras: ${item.loras ?? ""}`}
-									alt={item.filename}
-									className="result-image"
-								></img>
+						{displayedResults.map((item: any, index: number) => {
+							const imgSrc = `${COMFY_UI_URL}/view?filename=${item.filename}&type=output&subfolder=${item.subfolder}&rand=${item.random}
+							`;
+							return (
 								<div
-									className="image-button bin-image"
-									onClick={() =>
-										onDeleteImageFile(item.filename, item.subfolder)
-									}
-									title="Delete file"
+									className="output-image"
+									key={`${index}-${item.filename}-${item.random}`}
+									onPointerOver={() => onGetImageMeta(imgSrc, item.filename)}
 								>
-									❎
+									<img
+										src={imgSrc}
+										width="512"
+										height="512"
+										title={`workflow:${workflow}\nfilename: ${item.filename}\ncollection: ${item.subfolder}\n\nprompt:\n${item?.prompt ?? ""}\n\nmodel:\n${item?.model ?? ""}`}
+										alt={item.filename}
+										className="result-image"
+									></img>
+									<div
+										className="image-button clip-image"
+										onClick={() => onCopyPrompt(item.prompt)}
+										title={`Copy prompt to clipboard:\n\n${item.prompt}`}
+									>
+										✁
+									</div>
+									<div
+										className="image-button bin-image"
+										onClick={() =>
+											onDeleteImageFile(item.filename, item.subfolder)
+										}
+										title="Delete file"
+									>
+										❎
+									</div>
+									<div
+										className={`image-button fav-image ${item.filename?.startsWith("fav_") ? "activated" : ""}`}
+										onClick={() =>
+											onFavoriteImageFile(item.filename, item.subfolder)
+										}
+										title="Set as favorite"
+									>
+										★
+									</div>
 								</div>
-								<div
-									className={`image-button fav-image ${item.filename?.startsWith("fav_") ? "activated" : ""}`}
-									onClick={() =>
-										onFavoriteImageFile(item.filename, item.subfolder)
-									}
-									title="Set as favorite"
-								>
-									❤︎
-								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				</div>
 				<div className="bottom-half">

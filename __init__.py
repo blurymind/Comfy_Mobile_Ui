@@ -5,7 +5,7 @@ import server
 import folder_paths
 from aiohttp import web
 import json
-from PIL import Image
+from PIL import Image, ExifTags
 from PIL.ExifTags import TAGS
 
 ROOT_FOLDER = os.path.dirname(os.path.realpath(__file__))
@@ -83,7 +83,8 @@ async def get_fs_info(request):
                 #         print(f"{tag:25}: {data}")
                 # print(f'file ---------- {file_name}')
                 if file_name.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
-                    path_files.append({"filename": file_name, "path": os.path.join(subfolder, file_name), "subfolder": dir_name })
+                    file_path = os.path.join(subfolder, file_name)
+                    path_files.append({"filename": file_name, "path": file_path, "subfolder": dir_name })
 
         except:
             print(f'Couldnt get files for {subfolder}')
